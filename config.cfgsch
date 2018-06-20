@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<MCU_DEVICE_FLAGS>
+  <DEVICE>
+    <DEVICE_NAME>P16F18326</DEVICE_NAME>
+    <DEVICE_CLOCK>32</DEVICE_CLOCK>
+    <SETTINGS>
+      <COUNT>18</COUNT>
+      <SETTING0>
+        <NAME>FEXTOSC External Oscillator mode Selection bits</NAME>
+        <DESCRIPTION>Oscillator not enabled</DESCRIPTION>
+      </SETTING0>
+      <SETTING1>
+        <NAME>Power-up default value for COSC bits</NAME>
+        <DESCRIPTION>HFINTOSC with 2x PLL (32MHz)</DESCRIPTION>
+      </SETTING1>
+      <SETTING2>
+        <NAME>Clock Out Enable bit</NAME>
+        <DESCRIPTION>CLKOUT function is disabled</DESCRIPTION>
+      </SETTING2>
+      <SETTING3>
+        <NAME>Clock Switch Enable bit</NAME>
+        <DESCRIPTION>Writing to NOSC and NDIV is allowed</DESCRIPTION>
+      </SETTING3>
+      <SETTING4>
+        <NAME>Fail-Safe Clock Monitor Enable</NAME>
+        <DESCRIPTION>Fail-Safe Clock Monitor is enabled</DESCRIPTION>
+      </SETTING4>
+      <SETTING5>
+        <NAME>Master Clear Enable bit</NAME>
+        <DESCRIPTION>MCLR/VPP pin function is digital input</DESCRIPTION>
+      </SETTING5>
+      <SETTING6>
+        <NAME>Power-up Timer Enable bit</NAME>
+        <DESCRIPTION>PWRT disabled</DESCRIPTION>
+      </SETTING6>
+      <SETTING7>
+        <NAME>Watchdog Timer Enable bits</NAME>
+        <DESCRIPTION>WDT enabled, SWDTEN is ignored</DESCRIPTION>
+      </SETTING7>
+      <SETTING8>
+        <NAME>Low-power BOR enable bit</NAME>
+        <DESCRIPTION>ULPBOR disabled</DESCRIPTION>
+      </SETTING8>
+      <SETTING9>
+        <NAME>Brown-out Reset Enable bits</NAME>
+        <DESCRIPTION>Brown-out Reset disabled</DESCRIPTION>
+      </SETTING9>
+      <SETTING10>
+        <NAME>Brown-out Reset Voltage selection bit</NAME>
+        <DESCRIPTION>Brown-out voltage (Vbor) set to 2.45V</DESCRIPTION>
+      </SETTING10>
+      <SETTING11>
+        <NAME>PPSLOCK bit One-Way Set Enable bit</NAME>
+        <DESCRIPTION>The PPSLOCK bit can be cleared and set only once</DESCRIPTION>
+      </SETTING11>
+      <SETTING12>
+        <NAME>Stack Overflow/Underflow Reset Enable bit</NAME>
+        <DESCRIPTION>Stack Overflow or Underflow will cause a Reset</DESCRIPTION>
+      </SETTING12>
+      <SETTING13>
+        <NAME>Background Debug</NAME>
+        <DESCRIPTION>Background debugger disabled</DESCRIPTION>
+      </SETTING13>
+      <SETTING14>
+        <NAME>User NVM self-write protection bits</NAME>
+        <DESCRIPTION>Write protection off</DESCRIPTION>
+      </SETTING14>
+      <SETTING15>
+        <NAME>Low Voltage Programming Enable bit</NAME>
+        <DESCRIPTION>High Voltage on MCLR/VPP must be used for programming.</DESCRIPTION>
+      </SETTING15>
+      <SETTING16>
+        <NAME>User NVM Program Memory Code Protection bit</NAME>
+        <DESCRIPTION>User NVM code protection disabled</DESCRIPTION>
+      </SETTING16>
+      <SETTING17>
+        <NAME>Data NVM Memory Code Protection bit</NAME>
+        <DESCRIPTION>Data NVM code protection disabled</DESCRIPTION>
+      </SETTING17>
+    </SETTINGS>
+  </DEVICE>
+</MCU_DEVICE_FLAGS>

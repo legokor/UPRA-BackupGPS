@@ -1,3 +1,18 @@
+# MikroC stuff
+*.bmk
+*.brk
+*.dbg
+*.dct
+*.dlt
+*.lst
+*.dic
+*.asm
+*.cp
+*.mcl
+*.ini
+*.txt
+
+
 # Prerequisites
 *.d
 
