@@ -1,7 +1,7 @@
 /*
   * UPRA Backup GPS tracker
-  * by ksstms
-  * 2017
+  * Tamás Kiss
+  * 2018
 
   * Hardware config
              MCU:    PIC16F18326
@@ -36,6 +36,7 @@
 #define _GSM_POWEROFF_ALTITUDE 5000  // meters
 #define _GSM_POWERON_ALTITUDE 4500   // meters
 #define _GPS_UPDATE_INTERVAL 100     // # of ticks (about 100 ms)
+#define _RSSI_UPDATE_INTERVAL 100    // # of ticks (about 100 ms)
 #define _DIAG_REPORT_INTERVAL 100    // # of ticks (about 100 ms)
 
 
@@ -105,15 +106,12 @@ void init(){
      
      TRISA = 0xFF;         // High-Z all pins
      TRISC = 0xFF;
-     LATA=0x00;
-     LATC=0x00;
-     
-     ANSELA  = 0;                       // Disable analog functionality
-     ANSELC = 0;
-     C1ON_bit = 0;                      // Disable comparators
-     C2ON_bit = 0;
-
-
+     LATA = 0x00;          // Clear output latches
+     LATC = 0x00;
+     AnalogPortA  = 0;          // Disable analog functionality
+     AnalogPortC = 0;
+     Comparator1ON = 0;         // Disable comparators
+     Comparator2ON = 0;
 
      RED_LED_dir = 0;
      RED_LED = 0;
@@ -124,7 +122,7 @@ void init(){
      RXPIN_dir = 1;
      TXPIN_dir = 0;
      Unlock_IOLOCK();              // Unlock peripheral pin select
-         UART1MD_bit = 0;          // Enable UART-PPS
+         UART1_Disabled = 0;       // Enable UART-PPS
          RXPPS = RXPIN;            // RX    = RXPIN
          TXPIN = 0b10100;          // TXPIN = TX
      Lock_IOLOCK();                // Lock PPS
@@ -148,7 +146,7 @@ void init(){
 
 
 void main() {
-     long int tick = 0;
+     unsigned long tick = 0;
      char timed_out = 0;
      char error = 0;
      char altstring[8];
@@ -177,7 +175,7 @@ void main() {
               ClearWDT();
 
               if(RING_FLAG){
-                            debugstr("RING\r");
+                            debugstr("RINGING\r");
                             
                             timed_out = get_number();
                             while(timed_out){
@@ -216,6 +214,14 @@ void main() {
                   else debugstr("    TIMEOUT\r");
               }
               
+              if(tick % _RSSI_UPDATE_INTERVAL == 0){
+                  timed_out = read_rssi();
+                  if(!timed_out){
+                                                                 //TODO: SEND TO LOGGER
+                  }
+                  else debugstr("    TIMEOUT\r");
+              }
+              
               
               if(gps_fix_status=='1'){
                    if(gsm_active && altitude>_GSM_POWEROFF_ALTITUDE){
@@ -234,38 +240,6 @@ void main() {
                    }
               }
 
-              #ifdef _DEBUG_MODE
-              if(tick % _DIAG_REPORT_INTERVAL == 0){
-                  debugstr("\rDIAG INFO:\rGPS: ");
-                  if(gps_fix_status=='1'){
-                      char i;
-                      
-                      inttostr(altitude,altstring);
-                      ltrim(altstring);
-                      for(i=0; timestamp[i]!=0; i++){
-                          if(i==4 || i==6 || i==8) debugchr('.');
-                          if(i==8) debugchr(' ');
-                          if(i==10 || i==12) debugchr(':');
-                          debugchr(timestamp[i]);
-                      }
-                      debugstr("; ");
-                      debugstr(latitude);
-                      debugstr("; ");
-                      debugstr(longitude);
-                      debugstr("; ");
-                      debugstr(altstring);
-                      debugstr("m");
-                  }
-                  else debugstr("No valid fix yet");
-              
-                  if(gsm_active) debugstr("\rGSM: ON");
-                  else debugstr("\rGSM: OFF");
-                  
-                  debugstr("\r\r");
-              }
-              #endif
-
-
               if(tick%10 == 0) YELLOW_LED = 1;
               else YELLOW_LED = 0;
               
@@ -275,5 +249,39 @@ void main() {
 
               tick++;
               delay_ms(100);
+              
+              
+              #ifdef _DEBUG_MODE
+              if(tick % _DIAG_REPORT_INTERVAL == 0){
+                  debugstr("\rDIAG INFO:\rGPS: ");
+                  if(gps_fix_status=='1'){
+                      char i;
+
+                      inttostr(altitude,altstring);
+                      ltrim(altstring);
+                      for(i=0; timestamp[i]!=0; i++){
+                          if(i==4 || i==6 || i==8) debugchr('.');
+                          if(i==8) debugchr(' ');
+                          if(i==10 || i==12) debugchr(':');
+                          debugchr(timestamp[i]);
+                      }
+                      debugstr("; LAT ");
+                      debugstr(latitude);
+                      debugstr("; LON ");
+                      debugstr(longitude);
+                      debugstr("; ALT ");
+                      debugstr(altstring);
+                      debugstr("m");
+                  }
+                  else debugstr("No valid fix yet");
+
+                  if(gsm_active) debugstr("\rGSM: ON");
+                  else debugstr("\rGSM: OFF");
+
+                  debugstr("\rRSSI: "); debugstr(rssi);
+                  debugstr("\rBER:  "); debugstr(ber);
+                  debugstr("\r\r");
+              }
+              #endif
      }
 }

@@ -1,10 +1,19 @@
-// INTERRUPTS
+// Pin config
+   #define AnalogPortA ANSELA
+   #define AnalogPortC ANSELC
+   #define Comparator1ON C1ON_bit
+   #define Comparator2ON C2ON_bit
+
+// Peripheral Pin Select (PPS)
+   #define UART1_Disabled UART1MD_bit
+
+// Interrupts
     #define GlobalInterruptEnable GIE_bit
     #define PeripheralInterruptEnable PEIE_bit
     #define UART_RX_Interrupt_Enable RCIE_bit
     #define UART_RX_Interrupt_Flag RCIF_bit
 
-// WATCHDOG TIMER
+// Watchdog timer
     //Timing constants
     #define _WDT_SoftEnable_256s   0b00100101
     #define _WDT_SoftEnable_128s   0b00100011
@@ -51,5 +60,4 @@
 
     // ASM code to reset the WDT
     #define ClearWDT() asm CLRWDT
-
-  
+    

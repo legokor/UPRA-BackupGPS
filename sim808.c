@@ -1,5 +1,4 @@
 #include "sim808.h"
-#include "mcu_constants.h"
 #include "pin_config.h"
 #include "diag_port.h"
 
@@ -16,18 +15,18 @@ char timestamp[20] = "0";
 char latitude[12]  = "0";
 char longitude[12] = "0";
 int altitude       = 0;
+char rssi[5] = "-1";
+char ber[5] = "-1";
 
 char phone_number[16];
 
 char flag_timeout(char *flag){
     char i = 0;
     
-    ClearWDT();
-    
-    while(!*flag && i < 20){
+    while(!*flag && i < _COMMAND_TIMEOUT){
          if(!*flag){
               ++i;
-              delay_ms(500);
+              delay_ms(100);
          }
     }
     
@@ -294,7 +293,7 @@ char get_number(){
 char end_call(){
      char timeout;
 
-     debugstr("end_call()");
+     debugstr("end_call()\r");
      
      timeout = command("ATH\r", &OK_FLAG);
      if(timeout) return 1;
@@ -304,7 +303,6 @@ char end_call(){
 char send_sms(){
      char altstring[8];
      char commandstring[32];
-     char i;
      
      debugstr("send_sms()\r");
      
@@ -360,6 +358,37 @@ char send_sms(){
          debugstr(altstring);
      }
      else debugstr("    SMS \"No valid fix\" sent\r");
+
+     return 0;
+}
+
+char read_rssi(){
+     char timeout;
+     int i, msgpos, found=0;
+
+     debugstr("read_rssi()\r");
+
+     // Read data into the buffer
+     timeout = command ("AT+CSQ\r", &OK_FLAG);
+     if(timeout) return 1;
+
+     // Locate data in buffer
+     for(i=0; !found && i<buff_end-11 ; i++){
+          if(gnss_buff[i]  =='C' && gnss_buff[i+1]=='S' && gnss_buff[i+2]=='Q' && gnss_buff[i+3]==':'){
+               msgpos = i+5;
+               found = 1;
+          }
+     }
+     if(!found) return 1;
+
+     // Copy RSSI string
+     for(i=0; i<3 && gnss_buff[msgpos + i]!=','; i++) rssi[i] = gnss_buff[msgpos + i];
+     rssi[i] = 0;
+     msgpos += i+1;
+     
+     // Copy BER string
+     for(i=0; i<3 && gnss_buff[msgpos + i]!=CR ; i++) ber[i] = gnss_buff[msgpos + i];
+     ber[i] = 0;
 
      return 0;
 }

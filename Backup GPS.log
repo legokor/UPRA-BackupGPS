@@ -1,23 +1,23 @@
-0	1	mikroCPIC1618.exe -MSF -DBG -pP16F18326 -DL -O11111114 -fo32 -N"E:\Projects\PIC\UPRA_backupGPS\SW\full\Backup GPS.mcppi" -SP"C:\Users\ksstms\Documents\Mikroelektronika\mikroC PRO for PIC\Defs\" -SP"C:\Users\ksstms\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16_Enh\" -SP"E:\Projects\PIC\UPRA_backupGPS\SW\full\" -IP"C:\Users\ksstms\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16_Enh\" -IP"E:\Projects\PIC\UPRA_backupGPS\SW\full\" "main.c" "sim808.c" "diag_port.c" "__Lib_Math.mcl" "__Lib_MathDouble.mcl" "__Lib_System.mcl" "__Lib_Delays.mcl" "__Lib_CString.mcl" "__Lib_Conversions.mcl" "__Lib_SoftUART.mcl" "__Lib_PPS_18325.mcl" "__Lib_UART_Remappable.mcl"	 
+0	1	mikroCPIC1618.exe -MSF -DBG -pP16F18326 -DL -O11111114 -fo32 -N"D:\git\UPRA-BackupGPS\Backup GPS.mcppi" -SP"C:\Users\ksstms\Documents\Mikroelektronika\mikroC PRO for PIC\Defs\" -SP"C:\Users\ksstms\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16_Enh\" -SP"D:\git\UPRA-BackupGPS\" -IP"C:\Users\ksstms\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16_Enh\" -IP"D:\git\UPRA-BackupGPS\" "main.c" "sim808.c" "diag_port.c" "__Lib_Math.mcl" "__Lib_MathDouble.mcl" "__Lib_System.mcl" "__Lib_Delays.mcl" "__Lib_CString.mcl" "__Lib_Conversions.mcl" "__Lib_SoftUART.mcl" "__Lib_PPS_18325.mcl" "__Lib_UART_Remappable.mcl"	 
 hint: 0	1139	Available RAM: 2032 [bytes], Available ROM: 16384 [bytes]	 
 diagnostics: 0	122	Compilation Started	sim808.h
-diagnostics: 279	123	Compiled Successfully	main.c
-hint: 153	1164	Variable 'error' has been eliminated by optimizer	main.c
+diagnostics: 287	123	Compiled Successfully	main.c
+hint: 151	1164	Variable 'error' has been eliminated by optimizer	main.c
 diagnostics: 0	122	Compilation Started	sim808.h
-hint: 307	1163	Variable 'i' has been declared, but not used	sim808.c
-diagnostics: 365	123	Compiled Successfully	sim808.c
-hint: 48	1164	Variable 'timeout' has been eliminated by optimizer	sim808.c
-hint: 80	1164	Variable 'timeout' has been eliminated by optimizer	sim808.c
-hint: 92	1164	Variable 'timeout' has been eliminated by optimizer	sim808.c
-hint: 104	1164	Variable 'timeout' has been eliminated by optimizer	sim808.c
-hint: 257	1164	Variable 'timeout' has been eliminated by optimizer	sim808.c
-hint: 295	1164	Variable 'timeout' has been eliminated by optimizer	sim808.c
+diagnostics: 394	123	Compiled Successfully	sim808.c
+hint: 47	1164	Variable 'timeout' has been eliminated by optimizer	sim808.c
+hint: 79	1164	Variable 'timeout' has been eliminated by optimizer	sim808.c
+hint: 91	1164	Variable 'timeout' has been eliminated by optimizer	sim808.c
+hint: 103	1164	Variable 'timeout' has been eliminated by optimizer	sim808.c
+hint: 256	1164	Variable 'timeout' has been eliminated by optimizer	sim808.c
+hint: 294	1164	Variable 'timeout' has been eliminated by optimizer	sim808.c
+hint: 366	1164	Variable 'timeout' has been eliminated by optimizer	sim808.c
 diagnostics: 0	122	Compilation Started	diag_port.h
-diagnostics: 8	123	Compiled Successfully	diag_port.c
-diagnostics: 0	127	All files Compiled in 188 ms	 
-hint: 0	1144	Used RAM (bytes): 1135 (56%)  Free RAM (bytes): 897 (44%)	Used RAM (bytes): 1135 (56%)  Free RAM (bytes): 897 (44%)
-hint: 0	1144	Used ROM (program words): 5389 (33%)  Free ROM (program words): 10995 (67%)	Used ROM (program words): 5389 (33%)  Free ROM (program words): 10995 (67%)
+diagnostics: 5	123	Compiled Successfully	diag_port.c
+diagnostics: 0	127	All files Compiled in 203 ms	 
+hint: 0	1144	Used RAM (bytes): 1213 (60%)  Free RAM (bytes): 819 (40%)	Used RAM (bytes): 1213 (60%)  Free RAM (bytes): 819 (40%)
+hint: 0	1144	Used ROM (program words): 6220 (38%)  Free ROM (program words): 10164 (62%)	Used ROM (program words): 6220 (38%)  Free ROM (program words): 10164 (62%)
 diagnostics: 0	125	Project Linked Successfully	Backup GPS.mcppi
-diagnostics: 0	128	Linked in 78 ms	 
+diagnostics: 0	128	Linked in 62 ms	 
 diagnostics: 0	129	Project 'Backup GPS.mcppi' completed: 297 ms	 
-diagnostics: 0	103	Finished successfully: 20 jún. 2018, 20:02:01	Backup GPS.mcppi
+diagnostics: 0	103	Finished successfully: 01 júl. 2018, 20:47:01	Backup GPS.mcppi
