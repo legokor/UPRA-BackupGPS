@@ -33,12 +33,14 @@
 #include "pin_config.h"
 #include "diag_port.h"
 
-#define _GSM_POWEROFF_ALTITUDE 5000  // meters
-#define _GSM_POWERON_ALTITUDE 4500   // meters
-#define _GPS_UPDATE_INTERVAL 100     // # of ticks (about 100 ms)
-#define _RSSI_UPDATE_INTERVAL 100    // # of ticks (about 100 ms)
-#define _DIAG_REPORT_INTERVAL 100    // # of ticks (about 100 ms)
+#define _GSM_POWEROFF_ALTITUDE 5000   // meters
+#define _GSM_POWERON_ALTITUDE 4500    // meters
 
+#define _GPS_UPDATE_INTERVAL 20           // # of ticks (about 100 ms)
+#define _RSSI_UPDATE_INTERVAL 20
+#define _TEMP_UPDATE_INTERVAL 20
+#define _VBAT_UPDATE_INTERVAL 20
+#define _DIAG_REPORT_INTERVAL 20
 
 void interrupt(){
      if(RCIF_bit && buff_end < _GNSS_BUFF_SIZE-1) {
@@ -99,7 +101,7 @@ void interrupt(){
 
 
 // Inititalize internal modules
-void init(){
+void mcu_init(){
      WDTCON = _WDT_SoftEnable_32s;      // Enable the watchdog timer
      
      GlobalInterruptEnable = 0;
@@ -151,19 +153,18 @@ void main() {
      char error = 0;
      char altstring[8];
      
-     init();
+     mcu_init();
+     debugstr("POWER ON\r");
+     debugstr("\rData format:\r");
+     debugstr("DATA:Time,Lat,Lon,Alt(m),GSM_state,RSSI,BER,Temp(C),V_Bat(mV)\r\r");
 
      RED_LED = 1;
-
-     #ifdef _DEBUG_MODE
-            delay_ms(2000);
-     #endif
 
      ClearWDT();
 
      timed_out = fona_init();
      while(timed_out){
-                    debugstr("TIMEOUT: GPS/GSM init\r");
+                    debugstr("TIMEOUT\r");
                     timed_out = fona_init();
      }
 
@@ -176,112 +177,142 @@ void main() {
 
               if(RING_FLAG){
                             debugstr("RINGING\r");
-                            
+          
+                            debugstr("get_number");
                             timed_out = get_number();
+                            
                             while(timed_out){
-                                debugstr("    TIMEOUT\r");
+                                debugstr(" TIMEOUT");
+                                debugstr("\rget_number");
                                 timed_out = get_number();
                             }
                             
                             ClearWDT();
                             
+                            debugstr(phone_number);
+                            debugstr("\rend_call");
                             timed_out = end_call();
+                            
                             while(timed_out){
-                                debugstr("    TIMEOUT\r");
+                                debugstr(" TIMEOUT");
+                                debugstr("\rend_call");
                                 timed_out = end_call();
                             }
                             
-                            
                             ClearWDT();
 
+                            debugstr("\rsend_sms");
                             timed_out = send_sms();
+                            
                             while(timed_out){
-                                debugstr("    TIMEOUT\r");
+                                debugstr(" TIMEOUT");
+                                debugstr("\rsend_sms");
                                 timed_out = send_sms();
                             }
+                            debugchr(CR);
 
-                            RING_FLAG = 0;
                             ClearWDT();
+                            RING_FLAG = 0;
               }
 
 
               if(tick % _GPS_UPDATE_INTERVAL == 0){
+                  debugstr("get_gps_data");
                   timed_out = get_gps_data();
+                  
                   if(!timed_out){
-                      error = gps_parse();
-                      if(error) debugstr("    Buffer invalid\r");
+                       debugstr("\rgps_parse");
+                       error = gps_parse();
+                       if(error) debugstr(" BUFFER INVALID\r");
                   }
-                  else debugstr("    TIMEOUT\r");
+                  else debugstr(" TIMEOUT\r");
               }
               
               if(tick % _RSSI_UPDATE_INTERVAL == 0){
+                  debugstr("read_rssi");
                   timed_out = read_rssi();
-                  if(!timed_out){
-                                                                 //TODO: SEND TO LOGGER
-                  }
-                  else debugstr("    TIMEOUT\r");
+                  if(timed_out) debugstr(" ERROR");
+                  debugchr(CR);
               }
               
+              if(tick % _TEMP_UPDATE_INTERVAL == 0){
+                  debugstr("read_temp");
+                  timed_out = read_temp();
+                  if(timed_out) debugstr(" ERROR");
+                  debugchr(CR);
+              }
+              
+              if(tick % _RSSI_UPDATE_INTERVAL == 0){
+                  debugstr("read_vbat");
+                  timed_out = read_vbat();
+                  if(timed_out) debugstr(" ERROR");
+                  debugchr(CR);
+              }
               
               if(gps_fix_status=='1'){
                    if(gsm_active && altitude>_GSM_POWEROFF_ALTITUDE){
+                       debugstr("gsm_poweroff");
                        timed_out = gsm_poweroff();
                        while(timed_out){
-                           debugstr("    TIMEOUT\r");
+                           debugstr(" TIMEOUT");
+                           debugstr("\rgsm_poweroff");
                            timed_out = gsm_poweroff();
                        }
+                       debugchr(CR);
                    }
                    if(!gsm_active && altitude<_GSM_POWERON_ALTITUDE){
+                       debugstr("gsm_poweron");
                        timed_out = gsm_poweron();
                        while(timed_out){
-                           debugstr("    TIMEOUT\r");
+                           debugstr(" TIMEOUT");
+                           debugstr("\rgsm_poweron");
                            timed_out = gsm_poweron();
                        }
+                       debugchr(CR);
                    }
               }
-
-              if(tick%10 == 0) YELLOW_LED = 1;
-              else YELLOW_LED = 0;
               
               if(tick % _GPS_UPDATE_INTERVAL == 0 ) RED_LED = 1;
               else RED_LED = 0;
               
-
               tick++;
               delay_ms(100);
               
               
+              
               #ifdef _DEBUG_MODE
-              if(tick % _DIAG_REPORT_INTERVAL == 0){
-                  debugstr("\rDIAG INFO:\rGPS: ");
-                  if(gps_fix_status=='1'){
-                      char i;
+                  if(tick % _DIAG_REPORT_INTERVAL == 0){
+                        debugstr("\rDATA:");
 
-                      inttostr(altitude,altstring);
-                      ltrim(altstring);
-                      for(i=0; timestamp[i]!=0; i++){
-                          if(i==4 || i==6 || i==8) debugchr('.');
-                          if(i==8) debugchr(' ');
-                          if(i==10 || i==12) debugchr(':');
-                          debugchr(timestamp[i]);
-                      }
-                      debugstr("; LAT ");
-                      debugstr(latitude);
-                      debugstr("; LON ");
-                      debugstr(longitude);
-                      debugstr("; ALT ");
-                      debugstr(altstring);
-                      debugstr("m");
+                        if(gps_fix_status=='1'){
+                             char i;
+
+                             inttostr(altitude,altstring);
+                             ltrim(altstring);
+                             for(i=0; timestamp[i]!=0; i++){
+                                  if(i==4 || i==6 || i==8) debugchr('.');
+                                  if(i==8) debugchr(' ');
+                                  if(i==10 || i==12) debugchr(':');
+                                  debugchr(timestamp[i]);
+                             }
+                             debugchr(',');
+                             debugstr(latitude);
+                             debugchr(',');
+                             debugstr(longitude);
+                             debugchr(',');
+                             debugstr(altstring);
+                        }
+                        else debugstr(",,,");
+
+                        if(gsm_active) debugstr(",ON");
+                        else debugstr(",OFF");
+
+                        debugchr(','); debugstr(rssi);
+                        debugchr(','); debugstr(ber);
+                        debugchr(','); debugstr(temp);
+                        debugchr(','); debugstr(vbat);
+                        debugstr("\r\r");
                   }
-                  else debugstr("No valid fix yet");
-
-                  if(gsm_active) debugstr("\rGSM: ON");
-                  else debugstr("\rGSM: OFF");
-
-                  debugstr("\rRSSI: "); debugstr(rssi);
-                  debugstr("\rBER:  "); debugstr(ber);
-                  debugstr("\r\r");
-              }
               #endif
      }
 }

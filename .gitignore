@@ -11,6 +11,7 @@
 *.mcl
 *.ini
 *.txt
+*.log
 
 
 # Prerequisites
@@ -64,4 +65,3 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-/Backup GPS.log

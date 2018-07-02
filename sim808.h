@@ -5,9 +5,9 @@
 #define _DEBUG_MODE
 
 
-#ifndef _DEBUG_MODE
-    #ifdef _SMS_DISABLED
-        #error SMS disabled in release build
+#ifdef _SMS_DISABLED
+    #ifndef _DEBUG_MODE
+        #error "SMS disabled in release build"
     #endif
 #endif
 
@@ -30,8 +30,10 @@ extern char timestamp[20];
 extern char latitude[12];
 extern char longitude[12];
 extern int altitude;
-extern char rssi[3];
-extern char ber[3];
+extern char rssi[5];
+extern char ber[5];
+extern char vbat[8];
+extern char temp[8];
 
 
 char fona_init();
@@ -43,4 +45,6 @@ char end_call();
 char gps_parse();
 char send_sms();
 char read_rssi();
+char read_vbat();
+char read_temp();
 #endif

@@ -17,6 +17,8 @@ char longitude[12] = "0";
 int altitude       = 0;
 char rssi[5] = "-1";
 char ber[5] = "-1";
+char vbat[8] = "-1";
+char temp[8] = "-1";
 
 char phone_number[16];
 
@@ -46,7 +48,7 @@ char command(char *cmd, char *flag){
 char fona_init(){
     char timeout;
     
-    debugstr("fona_init()\r");
+    debugstr("fona_init()");
      
     GSM_DTR_dir = 0;
     GSM_DTR = 0;
@@ -56,19 +58,19 @@ char fona_init(){
 
     timeout = command("AT+CFUN=1\r", &OK_FLAG);             // Enable GSM functions
     if(timeout) return 1;
-    debugstr("   +CFUN=1 OK\r");
+    debugstr("\r   +CFUN=1 OK");
     
     timeout = command("ATE0\r", &OK_FLAG);                 // Disable command echo
     if(timeout) return 2;
-    debugstr("   ATE0 OK\r");
+    debugstr("\r   ATE0 OK");
 
     timeout = command("AT+CGNSPWR=1\r", &OK_FLAG);         // Enable GNSS functions
     if(timeout) return 3;
-    debugstr("   +CGNSPWR=1 OK\r");
+    debugstr("\r   +CGNSPWR=1 OK");
 
-    timeout = command("AT+CMGF=1\r", &OK_FLAG);            // Set SMS format to text mode
-    if(timeout) return 4;
-    debugstr("   +CMGF=1 OK\r");
+ //   timeout = command("AT+CMGF=1\r", &OK_FLAG);            // Set SMS format to text mode
+ //   if(timeout) return 4;
+ //   debugstr("   +CMGF=1 OK\r");
     
     gsm_active = 1;
 
@@ -77,8 +79,6 @@ char fona_init(){
 
 char gsm_poweron(){
      char timeout;
-     
-     debugstr("gsm_poweron()\r");
      
      timeout = command("AT+CFUN=1\r", &OK_FLAG);
      if(timeout) return 1;
@@ -89,8 +89,6 @@ char gsm_poweron(){
 
 char gsm_poweroff(){
      char timeout;
-     
-     debugstr("gsm_poweroff()\r");
 
      timeout = command("AT+CFUN=0\r", &OK_FLAG);
      if(timeout) return 1;
@@ -101,9 +99,7 @@ char gsm_poweroff(){
 
 char get_gps_data(){
      char timeout;
-     
-     debugstr("get_gps_data()\r");
-     
+
      timeout = command("AT+CGNSINF\r", &OK_FLAG);
      if(timeout) return 1;
 
@@ -148,8 +144,6 @@ char gps_parse(){
      int i,j,k, found;
      char *inf;
      char infsize;
-
-     debugstr("gps_parse()\r");
 
      // Find CGNSINF header in the buffer
      found = 0;
@@ -224,22 +218,6 @@ char gps_parse(){
                     }
                }
           }
-
-          debugstr("    NEW Run status: ");
-          debugchr(gps_run_status);
-          debugstr("\r    NEW Fix status: ");
-          debugchr(gps_fix_status);
-          debugstr("\r    NEW UTC time:   ");
-          debugstr(timestamp);
-          debugstr("\r    NEW Latitude:   ");
-          debugstr(latitude);
-          debugstr("\r    NEW Longitude:  ");
-          debugstr(longitude);
-          debugstr("\r    NEW Altitude:   ");
-          debuginttostr(altitude,tmp);
-          debugstr(tmp);
-          debugchr(CR);
-
           return 0;    // NEW data parsed
      }
      else return 1;    // OLD data remains
@@ -254,8 +232,6 @@ char get_number(){
      char *inf;
      char infsize;
      char timeout;
-
-     debugstr("get_number()\r");
 
      timeout = command("AT+CLCC\r", &OK_FLAG);
      if(timeout) return 1;
@@ -282,10 +258,6 @@ char get_number(){
              }
          }
      }
-
-     debugstr("    Phone number: ");
-     debugstr(phone_number);
-     debugchr(CR);
      
      return 0;
 }
@@ -293,8 +265,6 @@ char get_number(){
 char end_call(){
      char timeout;
 
-     debugstr("end_call()\r");
-     
      timeout = command("ATH\r", &OK_FLAG);
      if(timeout) return 1;
      else return 0;
@@ -303,9 +273,7 @@ char end_call(){
 char send_sms(){
      char altstring[8];
      char commandstring[32];
-     
-     debugstr("send_sms()\r");
-     
+
      // Convert altitude to string
      inttostr(altitude,altstring);
      ltrim(altstring);
@@ -317,7 +285,7 @@ char send_sms(){
 
 
      #ifndef _SMS_DISABLED
-     //Send real SMS
+        //Send real SMS
         timeout = command(commandstring, &PROMPT_FLAG);
         if(timeout) return 1;
         else{
@@ -343,21 +311,21 @@ char send_sms(){
             timeout = flag_timeout(&OK_FLAG);
             if(timeout) return 2;
         }
+     #else
+        // Write data to diag port
+        if(gps_fix_status=='1'){
+           debugstr("    SMS data sent ");
+           debugstr(" UTC ");
+           debugstr(timestamp);
+           debugstr(" LAT ");
+           debugstr(latitude);
+           debugstr(" LON ");
+           debugstr(longitude);
+           debugstr(" ALT ");
+           debugstr(altstring);
+        }
+        else debugstr("    SMS \"No valid fix\" sent\r");
      #endif
-     
-     // Write data to diag port
-     if(gps_fix_status=='1'){
-         debugstr("    SMS data sent ");
-         debugstr(" UTC ");
-         debugstr(timestamp);
-         debugstr(" LAT ");
-         debugstr(latitude);
-         debugstr(" LON ");
-         debugstr(longitude);
-         debugstr(" ALT ");
-         debugstr(altstring);
-     }
-     else debugstr("    SMS \"No valid fix\" sent\r");
 
      return 0;
 }
@@ -366,20 +334,18 @@ char read_rssi(){
      char timeout;
      int i, msgpos, found=0;
 
-     debugstr("read_rssi()\r");
-
      // Read data into the buffer
-     timeout = command ("AT+CSQ\r", &OK_FLAG);
+     timeout = command("AT+CSQ\r", &OK_FLAG);
      if(timeout) return 1;
 
      // Locate data in buffer
      for(i=0; !found && i<buff_end-11 ; i++){
-          if(gnss_buff[i]  =='C' && gnss_buff[i+1]=='S' && gnss_buff[i+2]=='Q' && gnss_buff[i+3]==':'){
+          if(gnss_buff[i]=='C' && gnss_buff[i+1]=='S' && gnss_buff[i+2]=='Q' && gnss_buff[i+3]==':'){
                msgpos = i+5;
                found = 1;
           }
      }
-     if(!found) return 1;
+     if(!found) return 2;
 
      // Copy RSSI string
      for(i=0; i<3 && gnss_buff[msgpos + i]!=','; i++) rssi[i] = gnss_buff[msgpos + i];
@@ -390,5 +356,67 @@ char read_rssi(){
      for(i=0; i<3 && gnss_buff[msgpos + i]!=CR ; i++) ber[i] = gnss_buff[msgpos + i];
      ber[i] = 0;
 
+     return 0;
+}
+
+char read_vbat(){
+     char timeout;
+     int i, msgpos, found=0;
+
+     // Read data into the buffer
+     timeout = command("AT+CBC\r", &OK_FLAG);
+     if(timeout) return 1;
+     
+     // Locate data in buffer
+     for(i=0; !found && i<buff_end-14 ; i++){
+          if(gnss_buff[i]=='C' && gnss_buff[i+1]=='B' && gnss_buff[i+2]=='C' && gnss_buff[i+3]==':'){
+               msgpos = i+5;
+               found = 1;
+          }
+     }
+     if(!found) return 2;
+     
+     // Jump over two commas
+     for(; msgpos<buff_end && gnss_buff[msgpos]!=','; msgpos++);
+     if(msgpos > buff_end-7) return 3;
+     
+     for(msgpos++; msgpos<buff_end && gnss_buff[msgpos]!=','; msgpos++);
+     if(msgpos > buff_end-5) return 4;
+
+     msgpos++;
+     
+     // Copy VBAT string
+     for(i=0; i<4 && gnss_buff[msgpos + i]!=CR; i++) vbat[i] = gnss_buff[msgpos + i];
+     vbat[i] = 0;
+     
+     return 0;
+}
+
+char read_temp(){
+     char timeout;
+     int i, msgpos, found=0;
+
+     // Read data into the buffer
+     timeout = command("AT+CMTE?\r", &OK_FLAG);
+     if(timeout) return 1;
+
+     // Locate data in buffer
+     for(i=0; !found && i<buff_end-13 ; i++){
+          if(gnss_buff[i]=='C' && gnss_buff[i+1]=='M' && gnss_buff[i+2]=='T' && gnss_buff[i+3]=='E' && gnss_buff[i+4]==':'){
+               msgpos = i+6;
+               found = 1;
+          }
+     }
+     if(!found) return 2;
+     
+     // Jump over a comma
+     for(; msgpos<buff_end && gnss_buff[msgpos]!=','; msgpos++);
+     if(msgpos > buff_end-6) return 2;
+     msgpos++;
+
+     // Copy temperature string
+     for(i=0; i<5 && gnss_buff[msgpos + i]!=CR; i++) temp[i] = gnss_buff[msgpos + i];
+     temp[i] = 0;
+     
      return 0;
 }
