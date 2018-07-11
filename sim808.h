@@ -1,7 +1,7 @@
 #ifndef _SIM808_H
 #define _SIM808_H
 
-#define _SMS_DISABLED
+//#define _SMS_DISABLED
 #define _DEBUG_MODE
 
 

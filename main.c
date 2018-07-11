@@ -154,7 +154,7 @@ void main() {
      char altstring[8];
      
      mcu_init();
-     debugstr("POWER ON\r");
+     debugstr("\rPOWER ON\r");
      debugstr("\rData format:\r");
      debugstr("DATA:Time,Lat,Lon,Alt(m),GSM_state,RSSI,BER,Temp(C),V_Bat(mV)\r\r");
 
@@ -223,9 +223,10 @@ void main() {
                   if(!timed_out){
                        debugstr("\rgps_parse");
                        error = gps_parse();
-                       if(error) debugstr(" BUFFER INVALID\r");
+                       if(error) debugstr(" BUFFER INVALID");
                   }
-                  else debugstr(" TIMEOUT\r");
+                  else debugstr(" TIMEOUT");
+                  debugchr(CR);
               }
               
               if(tick % _RSSI_UPDATE_INTERVAL == 0){

@@ -68,9 +68,9 @@ char fona_init(){
     if(timeout) return 3;
     debugstr("\r   +CGNSPWR=1 OK");
 
- //   timeout = command("AT+CMGF=1\r", &OK_FLAG);            // Set SMS format to text mode
- //   if(timeout) return 4;
- //   debugstr("   +CMGF=1 OK\r");
+    timeout = command("AT+CMGF=1\r", &OK_FLAG);            // Set SMS format to text mode
+    if(timeout) return 4;
+    debugstr("   +CMGF=1 OK\r");
     
     gsm_active = 1;
 
@@ -273,7 +273,8 @@ char end_call(){
 char send_sms(){
      char altstring[8];
      char commandstring[32];
-
+     char timeout;
+     
      // Convert altitude to string
      inttostr(altitude,altstring);
      ltrim(altstring);
@@ -282,7 +283,6 @@ char send_sms(){
      strcpy(commandstring, "AT+CMGS=");
      strncat(commandstring, phone_number, 20);
      strcat(commandstring, "\r");
-
 
      #ifndef _SMS_DISABLED
         //Send real SMS
