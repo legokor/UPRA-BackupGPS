@@ -58,19 +58,19 @@ char fona_init(){
 
     timeout = command("AT+CFUN=1\r", &OK_FLAG);             // Enable GSM functions
     if(timeout) return 1;
-    debugstr("\r   +CFUN=1 OK");
+    debugstr("\r\n   +CFUN=1 OK");
     
     timeout = command("ATE0\r", &OK_FLAG);                 // Disable command echo
     if(timeout) return 2;
-    debugstr("\r   ATE0 OK");
+    debugstr("\r\n   ATE0 OK");
 
     timeout = command("AT+CGNSPWR=1\r", &OK_FLAG);         // Enable GNSS functions
     if(timeout) return 3;
-    debugstr("\r   +CGNSPWR=1 OK");
+    debugstr("\r\n   +CGNSPWR=1 OK");
 
     timeout = command("AT+CMGF=1\r", &OK_FLAG);            // Set SMS format to text mode
     if(timeout) return 4;
-    debugstr("   +CMGF=1 OK\r");
+    debugstr("   +CMGF=1 OK\r\n");
     
     gsm_active = 1;
 
@@ -324,7 +324,7 @@ char send_sms(){
            debugstr(" ALT ");
            debugstr(altstring);
         }
-        else debugstr("    SMS \"No valid fix\" sent\r");
+        else debugstr("    SMS \"No valid fix\" sent\r\n");
      #endif
 
      return 0;

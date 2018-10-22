@@ -154,9 +154,12 @@ void main() {
      char altstring[8];
      
      mcu_init();
-     debugstr("\rPOWER ON\r");
-     debugstr("\rData format:\r");
-     debugstr("DATA:Time,Lat,Lon,Alt(m),GSM_state,RSSI,BER,Temp(C),V_Bat(mV)\r\r");
+
+     delay_ms(3000);
+
+     debugstr("\r\nPOWER ON\r\n");
+     debugstr("\r\nData format:\r\n");
+     debugstr("DATA:Time,Lat,Lon,Alt(m),GSM_state,RSSI,BER,Temp(C),V_Bat(mV)\r\n\r\n");
 
      RED_LED = 1;
 
@@ -164,7 +167,7 @@ void main() {
 
      timed_out = fona_init();
      while(timed_out){
-                    debugstr("TIMEOUT\r");
+                    debugstr("TIMEOUT\r\n");
                     timed_out = fona_init();
      }
 
@@ -176,37 +179,37 @@ void main() {
               ClearWDT();
 
               if(RING_FLAG){
-                            debugstr("RINGING\r");
+                            debugstr("RINGING\r\n");
           
                             debugstr("get_number");
                             timed_out = get_number();
                             
                             while(timed_out){
                                 debugstr(" TIMEOUT");
-                                debugstr("\rget_number");
+                                debugstr("\r\nget_number");
                                 timed_out = get_number();
                             }
                             
                             ClearWDT();
                             
                             debugstr(phone_number);
-                            debugstr("\rend_call");
+                            debugstr("\r\nend_call");
                             timed_out = end_call();
                             
                             while(timed_out){
                                 debugstr(" TIMEOUT");
-                                debugstr("\rend_call");
+                                debugstr("\r\nend_call");
                                 timed_out = end_call();
                             }
                             
                             ClearWDT();
 
-                            debugstr("\rsend_sms");
+                            debugstr("\r\nsend_sms");
                             timed_out = send_sms();
                             
                             while(timed_out){
                                 debugstr(" TIMEOUT");
-                                debugstr("\rsend_sms");
+                                debugstr("\r\nsend_sms");
                                 timed_out = send_sms();
                             }
                             debugchr(CR);
@@ -221,7 +224,7 @@ void main() {
                   timed_out = get_gps_data();
                   
                   if(!timed_out){
-                       debugstr("\rgps_parse");
+                       debugstr("\r\ngps_parse");
                        error = gps_parse();
                        if(error) debugstr(" BUFFER INVALID");
                   }
@@ -230,21 +233,21 @@ void main() {
               }
               
               if(tick % _RSSI_UPDATE_INTERVAL == 0){
-                  debugstr("read_rssi");
+                  debugstr("\r\nread_rssi");
                   timed_out = read_rssi();
                   if(timed_out) debugstr(" ERROR");
                   debugchr(CR);
               }
               
               if(tick % _TEMP_UPDATE_INTERVAL == 0){
-                  debugstr("read_temp");
+                  debugstr("\r\nread_temp");
                   timed_out = read_temp();
                   if(timed_out) debugstr(" ERROR");
                   debugchr(CR);
               }
               
               if(tick % _RSSI_UPDATE_INTERVAL == 0){
-                  debugstr("read_vbat");
+                  debugstr("\r\nread_vbat");
                   timed_out = read_vbat();
                   if(timed_out) debugstr(" ERROR");
                   debugchr(CR);
@@ -252,21 +255,21 @@ void main() {
               
               if(gps_fix_status=='1'){
                    if(gsm_active && altitude>_GSM_POWEROFF_ALTITUDE){
-                       debugstr("gsm_poweroff");
+                       debugstr("\r\ngsm_poweroff");
                        timed_out = gsm_poweroff();
                        while(timed_out){
                            debugstr(" TIMEOUT");
-                           debugstr("\rgsm_poweroff");
+                           debugstr("\r\ngsm_poweroff");
                            timed_out = gsm_poweroff();
                        }
                        debugchr(CR);
                    }
                    if(!gsm_active && altitude<_GSM_POWERON_ALTITUDE){
-                       debugstr("gsm_poweron");
+                       debugstr("\r\ngsm_poweron");
                        timed_out = gsm_poweron();
                        while(timed_out){
                            debugstr(" TIMEOUT");
-                           debugstr("\rgsm_poweron");
+                           debugstr("\r\ngsm_poweron");
                            timed_out = gsm_poweron();
                        }
                        debugchr(CR);
@@ -283,7 +286,7 @@ void main() {
               
               #ifdef _DEBUG_MODE
                   if(tick % _DIAG_REPORT_INTERVAL == 0){
-                        debugstr("\rDATA:");
+                        debugstr("\r\nDATA:");
 
                         if(gps_fix_status=='1'){
                              char i;
@@ -312,7 +315,7 @@ void main() {
                         debugchr(','); debugstr(ber);
                         debugchr(','); debugstr(temp);
                         debugchr(','); debugstr(vbat);
-                        debugstr("\r\r");
+                        debugstr("\r\n\r\n");
                   }
               #endif
      }
