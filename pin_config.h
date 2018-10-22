@@ -2,10 +2,10 @@
 #define _PINCONFIG_H
 
 // LEDs
-sbit RED_LED at PORTA.B5;
-sbit RED_LED_dir at TRISA.B5;
-sbit YELLOW_LED at PORTA.B4;
-sbit YELLOW_LED_dir at TRISA.B4;
+sbit RED_LED at PORTC.B5;
+sbit RED_LED_dir at TRISC.B5;
+sbit YELLOW_LED at PORTC.B4;
+sbit YELLOW_LED_dir at TRISC.B4;
 
 // GSM module connections
 sbit GSM_DTR      at LATA.B2;
@@ -20,7 +20,7 @@ sbit TXPIN_dir at TRISC.B2;
 #define TXPIN RC2PPS
 
 // Diag port
-#define _DIAGPORT &PORTC
+#define _DIAGPORT &PORTA
 #define _DIAG_RXPIN 5
 #define _DIAG_TXPIN 4
 #define _DIAG_BAUD 9600
