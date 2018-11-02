@@ -154,6 +154,7 @@ void main() {
      char altstring[8];
      
      mcu_init();
+     YELLOW_LED = 1;
 
      delay_ms(3000);
 
@@ -175,10 +176,13 @@ void main() {
 
      ClearWDT();
 
+     YELLOW_LED = 0;
+
      while(1){
               ClearWDT();
 
               if(RING_FLAG){
+                            YELLOW_LED = 1;
                             debugstr("RINGING\r\n");
           
                             debugstr("get_number");
@@ -216,6 +220,8 @@ void main() {
 
                             ClearWDT();
                             RING_FLAG = 0;
+
+                            YELLOW_LED = 0;
               }
 
 
