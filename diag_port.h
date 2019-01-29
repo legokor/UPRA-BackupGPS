@@ -11,6 +11,6 @@
      #define debuginttostr(x,y)
 #endif
 
-void soft_uart_write_text(char*);
+void soft_uart_write_text(const char* t);
 
 #endif

@@ -36,7 +36,7 @@ char flag_timeout(char *flag){
     else return 1;
 }
 
-char command(char *cmd, char *flag){
+char command(const char *cmd, char *flag){
     buff_end = 0;
     *flag = 0;
     uart1_write_text(cmd);
@@ -291,20 +291,20 @@ char send_sms(){
         else{
             OK_FLAG = 0;
             if(gps_fix_status =='1'){
-                uart1_write_text("Last fix\r");
-                uart1_write_text("UTC: ");
+                uart1_write_text((const char*)"Last fix\r");
+                uart1_write_text((const char*)"UTC: ");
                 uart1_write_text(timestamp);
-                uart1_write_text("\rLAT: ");
+                uart1_write_text((const char*)"\rLAT: ");
                 uart1_write_text(latitude);
-                uart1_write_text("\rLON: ");
+                uart1_write_text((const char*)"\rLON: ");
                 uart1_write_text(longitude);
-                uart1_write_text("\rALT: ");
+                uart1_write_text((const char*)"\rALT: ");
                 uart1_write_text(altstring);
                 uart1_write(CR);
                 uart1_write(SUB);
             }
             else{
-                uart1_write_text("No valid fix yet\r");
+                uart1_write_text((const char*)"No valid fix yet\r");
                 uart1_write(SUB);
             }
         
