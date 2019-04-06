@@ -4,13 +4,11 @@
 //#define _SMS_DISABLED
 #define _DEBUG_MODE
 
-
 #ifdef _SMS_DISABLED
-    #ifndef _DEBUG_MODE
-        #error "SMS disabled in release build"
-    #endif
+#ifndef _DEBUG_MODE
+#error "SMS disabled in release build"
 #endif
-
+#endif
 
 #define CR 0x0D
 #define SUB 0x1A
@@ -35,7 +33,6 @@ extern char ber[5];
 extern char vbat[8];
 extern char temp[8];
 
-
 char fona_init();
 char gsm_poweron();
 char gsm_poweroff();
@@ -47,4 +44,5 @@ char send_sms();
 char read_rssi();
 char read_vbat();
 char read_temp();
-#endif
+
+#endif // #ifndef _SIM808_H

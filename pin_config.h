@@ -2,14 +2,14 @@
 #define _PINCONFIG_H
 
 // LEDs
-sbit RED_LED at PORTC.B5;
+sbit RED_LED     at PORTC.B5;
 sbit RED_LED_dir at TRISC.B5;
-sbit YELLOW_LED at PORTC.B4;
+sbit YELLOW_LED     at PORTC.B4;
 sbit YELLOW_LED_dir at TRISC.B4;
 
 // GSM module connections
-sbit GSM_DTR      at LATA.B2;
-sbit GSM_DTR_dir  at TRISA.B2;
+sbit GSM_DTR     at LATA.B2;
+sbit GSM_DTR_dir at TRISA.B2;
 sbit GSM_PWRKEY     at LATC.B0;
 sbit GSM_PWRKEY_dir at TRISC.B0;
 
