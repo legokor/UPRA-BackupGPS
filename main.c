@@ -4,7 +4,7 @@
  * 2018
 
  * Hardware config
-    MCU:    PIC16F18326
+    MCU:    PIC16F15325
     OSC:    INTOSC 32MHz (2xPLL)
 
  Ext. modules: SIM808
@@ -42,10 +42,10 @@
 #define _DIAG_REPORT_INTERVAL 20
 
 void interrupt() {
-    if (RCIF_bit && buff_end < _GNSS_BUFF_SIZE - 1) {
+    if(UART_RX_Interrupt_Flag && buff_end < _GNSS_BUFF_SIZE-1) {
         char buff_tmp;
 
-        buff_tmp = UART_Read();
+        buff_tmp = UART_RX_Data;
         gnss_buff[buff_end] = buff_tmp;
 
         switch (USM) {
@@ -120,14 +120,16 @@ void interrupt() {
         buff_end++;
         gnss_buff[buff_end] = 0;
 
-        RCIF_bit = 0;
+        UART_RX_Interrupt_Clear();
     }
 }
 
-// Inititalize internal modules
+/**
+ * Inititalize internal modules
+ * @note Watchdog timer is configured by device config on the
+ *       16F15325, and software control is disabled
+ */
 void mcu_init() {
-    WDTCON = _WDT_SoftEnable_32s;      // Enable the watchdog timer
-
     GlobalInterruptEnable = 0;
 
     TRISA = 0xFF;         // High-Z all pins
@@ -138,6 +140,8 @@ void mcu_init() {
     AnalogPortC = 0;
     Comparator1ON = 0;         // Disable comparators
     Comparator2ON = 0;
+    CCP1Reg = 0;               // Disable Capture/Compare/PWM modules
+    CCP2Reg = 0;
 
     RED_LED_dir = 0;
     RED_LED = 0;
@@ -147,12 +151,14 @@ void mcu_init() {
     // Initialize UART module
     RXPIN_dir = 1;
     TXPIN_dir = 0;
+
     Unlock_IOLOCK();              // Unlock peripheral pin select
-    UART1_Disabled = 0;       // Enable UART-PPS
-    RXPPS = RXPIN;            // RX    = RXPIN
-    TXPIN = 0b10100;          // TXPIN = TX
+    UART1_Disabled = 0;           // Enable UART-PPS
+    UART1_RX_pin = RXPIN;         // RX    = RXPIN
+    TXPIN = UART1_TX_function;    // TXPIN = TX
     Lock_IOLOCK();                // Lock PPS
-    UART1_Remappable_Init(9600);
+
+    UART1_Init(9600);
     delay_ms(100);
 
     // Enable interrupts
@@ -177,7 +183,6 @@ void main() {
     char altstring[8];
 
     mcu_init();
-    YELLOW_LED = 1;
 
     delay_ms(3000);
 
